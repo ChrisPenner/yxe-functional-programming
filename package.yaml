@@ -26,6 +26,8 @@ dependencies:
 
 library:
   source-dirs: src
+  ghc-options:
+  - -Wall
 
 executables:
   yxe-functional-programming-exe:
@@ -35,5 +37,6 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -Wall
     dependencies:
     - yxe-functional-programming
