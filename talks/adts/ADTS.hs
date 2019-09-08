@@ -1,7 +1,7 @@
 module ADTS where
 
 data Point = Point Int Int
-    deriving Show
+    deriving (Show, Eq, Ord)
 
 getX :: Point -> Int
 getX (Point x _) = x
@@ -36,5 +36,24 @@ infixl 1 ?
 (?) :: Bool -> a -> a -> a
 (?) = if'
 
+distance :: Point' -> Point' -> Double
+distance Point' {x = x1, y = y1} Point' {x = x2, y = y2} =
+    sqrt(fromIntegral ((x2 - x1) ^ 2 + (y2 - y1) ^ 2))
+
 -- >>> zipWith3 if' [True, False] ["a", "b"] ["x", "y"]
 -- ["a","y"]
+
+data AccountStatus =
+    Active
+  | Pending
+  | Paused
+  | Cancelled
+  | Disabled
+    deriving (Show, Eq, Ord, Enum, Bounded)
+
+
+data Pair a = Pair a a
+    deriving (Show, Eq, Ord)
+
+data Tuple a b = Tuple a b
+    deriving (Show, Eq, Ord)

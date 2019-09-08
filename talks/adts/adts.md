@@ -218,8 +218,12 @@ Point' {x = 3, y = 27}
 # Unpacking Records
 
 ```haskell
-
+distance :: Point' -> Point' -> Double
+distance Point' {x = x1, y = y1} Point' {x = x2, y = y2} =
+    sqrt(fromIntegral ((x2 - x1) ^ 2 + (y2 - y1) ^ 2))
 ```
+
+#### You can do all the *javascript-y* stuff too...
 
 ---
 
@@ -228,10 +232,8 @@ Point' {x = 3, y = 27}
 ---
 
 ```haskell
-data Point' =
-    Point' { x :: Int
-           , y :: Int
-           } deriving (Show, Eq, Ord)
+data Point = Point Int Int 
+  deriving (Show, Eq, Ord)
 ```
 
 ---
@@ -239,24 +241,69 @@ data Point' =
 # **REAL** equaity
 
 ```haskell
->>> Point' 3 10 == Point' 3 10
+>>> Point 3 10 == Point 3 10
 True
 
->>> point1 = Point' 1 2
->>> point2 = Point' 1 2
+>>> point1 = Point 1 2
+>>> point2 = Point 1 2
 >>> point1 == point2
 True
 ```
 
 ---
 
->>> Point' 3 5 < Point' 3 6
+```haskell
+>>> Point 3 5 < Point 3 6
 True
->>> Point' 3 5 < Point' 3 2
-False
->>> Point' 3 5 < Point' 0 2
+
+>>> Point 3 5 < Point 3 2
 False
 
+>>> Point 3 5 < Point 0 2
+False
+```
+
+---
+
+```haskell
+data AccountStatus = 
+    Active
+  | Pending
+  | Paused
+  | Cancelled
+  | Disabled
+    deriving (Show, Eq, Ord, Enum, Bounded)
+
+>>> enumFrom Active
+[Active,Pending,Paused,Cancelled,Disabled]
+
+>>> [Active ..]
+[Active, Pending, Paused, Cancelled, Disabled]
+
+>>> [minBound .. maxBound ] :: [AccountStatus]
+[Active, Pending, Paused, Cancelled, Disabled]
+```
+
+---
+
+## Enum Tricks
+
+```haskell
+>>> ['a' .. 'z']
+"abcdefghijklmnopqrstuvwxyz"
+
+>>> [10, 8 .. 0]
+[10,8,6,4,2,0]
+```
+
+---
+
+We can derive other things too!
+
+* Hashable
+* ToJSON/FromJSON
+* ToBinary/FromBinary
+* SQL Types
 
 ---
 
@@ -266,10 +313,48 @@ False
 
 ```haskell
 data Pair a = Pair a a
-  deriving Show
 ```
 
 ---
+
+```haskell
+data Pair a = Pair a a
+```
+
+```haskell
+>>> :t Pair 4 5
+Pair 4 5 :: Pair Int
+
+>>> :t Pair "hi" "mom"
+Pair "hi" "mom" :: Pair String
+```
+
+---
+
+```haskell
+>>> Pair 42 "gazork"
+
+error:
+    • Couldn't match type ‘String’ with ‘Int’
+      Expected type: Int
+        Actual type: String
+    • In the second argument of ‘Pair’, namely ‘"gazork"’
+      In the expression: Pair 42 "gazork"
+```
+
+---
+
+```haskell
+data Tuple a b = Tuple a b
+
+
+>>> :t Tuple 42 "gazork"
+Tuple 42 "gazork" :: Tuple Int String
+```
+
+---
+
+
 
 # We Can even encode numbers!
 
