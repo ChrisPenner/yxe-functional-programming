@@ -61,6 +61,40 @@ getY (Point _ y) = y
 
 ---
 
+### _**A Quick note on**_
+
+#[fit] Referential Transparency
+
+---
+
+#[fit] `=`
+# *MEANS*
+#[fit] `=`
+
+---
+
+Definitions:
+
+```haskell
+getX (Point x _) = x
+
+point = Point 10 35
+```
+
+So:
+
+[.code-highlight: 1]
+[.code-highlight: 2]
+[.code-highlight: 3]
+[.code-highlight: all]
+```haskell
+  getX point
+= getX (Point 10 35)    -- Def. of 'point'
+= 10                    -- Def. of 'getX'
+```
+
+---
+
 ## Modifying
 
 ```haskell
@@ -72,6 +106,25 @@ Point 10 35
 
 >>> moveX 5 point
 Point 15 35
+```
+
+---
+
+```haskell
+moveX :: Int -> Point -> Point
+moveX n (Point x y) = Point (x + n) y
+```
+
+[.code-highlight: 1]
+[.code-highlight: 2]
+[.code-highlight: 3]
+[.code-highlight: 4]
+[.code-highlight: all]
+```haskell
+  moveX 5 point
+= moveX 5 (Point 10 35) -- Def. of 'point'
+= Point (10 + 5) 35     -- Def. of 'moveX'
+= Point 15 35           -- Evaluate addition
 ```
 
 ---
@@ -89,6 +142,12 @@ Point 15 35
 ---
 
 #[fit] `data Bool = True | False`
+
+---
+
+#[fit] Bools
+### *are an*
+#[fit] enum
 
 ---
 
@@ -140,6 +199,34 @@ olleh
 
 ---
 
+# We can even partially apply it and DELAY the 'if'
+
+```haskell
+choose :: a -> a -> Bool -> a
+choose x _ True = x
+choose _ y False = y
+```
+
+[.code-highlight: 0]
+[.code-highlight: 1-2]
+[.code-highlight: 3]
+[.code-highlight: 3-4]
+[.code-highlight: all]
+```haskell
+>>> let check :: Int -> String
+        check = choose "HI" "LOW" . (>10)
+>>> map check [3, 15, 6, 17, 13]
+["HI","LOW","HI","LOW","LOW"]
+```
+
+---
+
+#[fit] Haskell
+## *doesn't need*
+#[fit] **if**
+
+---
+
 Where were we again?
 
 ---
@@ -148,7 +235,9 @@ Oh right...
 
 ---
 
-# Case Statements
+#[fit] Case Statements
+
+### Bools aren't the only way to branch
 
 ---
 
@@ -161,6 +250,68 @@ if'' theBool whenTrue whenFalse =
         True  -> whenTrue
         False -> whenFalse
 ```
+
+---
+
+```haskell
+data ContactMethod = 
+    Email String
+  | Address String
+  | Phone String
+```
+
+---
+
+```haskell
+contactUser :: String -> ContactMethod -> IO ()
+contactUser msg method = 
+  case method of
+    Email email      -> sendEmail msg email
+    Address address  -> sendLetter msg email
+    Phone phNumber   -> sendText msg email
+```
+
+---
+
+```python
+class Email:
+  def __init__(self, email):
+      self.email = email
+
+  def contact(self, msg):
+    self.sendEmail(msg)
+```
+
+---
+
+```python
+class Email:
+  def __init__(self, email):
+      self.email = email
+
+  def contact(self, msg):
+    self.sendEmail(msg)
+
+class Address:
+  def __init__(self, email):
+      self.email = email
+
+  def contact(self, msg):
+    self.sendLetter(msg)
+
+class Phone:
+  def __init__(self, email):
+      self.email = email
+
+  def contact(self, msg):
+    self.sendText(msg)
+```
+
+---
+
+#[fit] ADTs 
+## are
+#[fit] *CLOSED*
 
 ---
 
@@ -217,10 +368,14 @@ Point' {x = 3, y = 27}
 
 # Unpacking Records
 
+[.code-highlight: 1-3]
+[.code-highlight: all]
 ```haskell
 distance :: Point' -> Point' -> Double
-distance Point' {x = x1, y = y1} Point' {x = x2, y = y2} =
-    sqrt(fromIntegral ((x2 - x1) ^ 2 + (y2 - y1) ^ 2))
+distance (Point' {x = x1, y = y1})
+         (Point' {x = x2, y = y2}) =
+    sqrt(fromIntegral ( (x2 - x1)^2 
+                      + (y2 - y1)^2))
 ```
 
 #### You can do all the *javascript-y* stuff too...
@@ -252,6 +407,8 @@ True
 
 ---
 
+# Derived Ordering
+
 ```haskell
 >>> Point 3 5 < Point 3 6
 True
@@ -273,7 +430,11 @@ data AccountStatus =
   | Cancelled
   | Disabled
     deriving (Show, Eq, Ord, Enum, Bounded)
+```
 
+---
+
+```haskell
 >>> enumFrom Active
 [Active,Pending,Paused,Cancelled,Disabled]
 
@@ -300,10 +461,10 @@ data AccountStatus =
 
 We can derive other things too!
 
-* Hashable
-* ToJSON/FromJSON
-* ToBinary/FromBinary
-* SQL Types
+* `Hashable`
+* `ToJSON/FromJSON`
+* `ToBinary/FromBinary`
+* `SQL Types`
 
 ---
 
@@ -321,6 +482,9 @@ data Pair a = Pair a a
 data Pair a = Pair a a
 ```
 
+[.code-highlight: 1-2]
+[.code-highlight: 4-5]
+[.code-highlight: all]
 ```haskell
 >>> :t Pair 4 5
 Pair 4 5 :: Pair Int
@@ -354,40 +518,95 @@ Tuple 42 "gazork" :: Tuple Int String
 
 ---
 
+```haskell
+data Either a b =
+    Left a
+  | Right b
 
 
-# We Can even encode numbers!
+>>> :t Left 42
+Left 42 :: Either Int b
+>>> :t Right "hello"
+Right "hello" :: Either a String
+```
 
-# What problems do they solve
+---
 
-# How do they relate to things I know?
+```haskell
+sizeOf :: Either String Int
+sizeOf (Left s) = length s
+sizeOf (Right n) = n
+```
 
-# Recursive types
+---
 
-# They're sub-sets of records
+#[fit] Recursive types
 
-# Don't mix behaviour with data
+--- 
 
-# Let's define some
+# Lists
 
-# Pattern matching & case analysis
+```haskell
+data List a =  Nil | Node a (List a)
+```
 
-## We're taught that booleans are the only way to branch
+---
 
-## In functions
-## In 'case'
+```haskell
+data List a =  Nil | Node a (List a)
 
-## vs. switch-case (says 'equality' is the only way to match)
+data [a] = [] | a : [a]
+```
 
+---
 
-## Breakdown into Sums and Products
+# Trees
 
+```haskell
+data BinTree a =  
+    Leaf 
+  | Node (BinTree a) a (BinTree a)
+```
 
-# GADTs
+---
 
-## You can carry proofs!
-## You can express relationships!
-## You can enforce sequencing!
+# Nullary Types
 
+---
 
+# [fit] `data Void`
 
+---
+
+```haskell
+data Void
+
+Type Parser e a = String -> Either e a
+
+alwaysSucceeds :: Parser Void Int
+alwaysFails :: Parser Error Void 
+```
+
+---
+
+```haskell
+server :: Config -> IO Void
+server config = do
+  serveRequest
+  server config
+```
+
+---
+
+# They can help make code more correct
+
+```haskell
+data Bound
+data Unbound
+
+data Socket isBound = Socket Int
+
+bind    :: Socket Unbound -> IO (Socket Bound)
+connect :: Socket Bound   -> IO ()
+unbind  :: Socket Bound   -> IO ()
+```
