@@ -23,6 +23,8 @@ dependencies:
 - base >= 4.7 && < 5
 - mtl
 - containers
+- raw-strings-qq
+- monoidal-containers
 
 library:
   source-dirs: src

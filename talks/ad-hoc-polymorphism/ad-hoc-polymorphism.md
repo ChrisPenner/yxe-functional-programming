@@ -18,7 +18,7 @@ slide-transition: push(horizontal)
 
 Basically just guess & test
 
-Hope you gues right!
+Hope you guess right!
 
 No contracts really
 

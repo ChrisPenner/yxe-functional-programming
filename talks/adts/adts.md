@@ -5,6 +5,7 @@ text: #FF5481
 header: #FF5481
 text-emphasis: #FFFFFF
 text-strong: #FF5481
+footer: `bit.ly/yxedevs | 💻 github.com/ChrisPenner | 🐦 @ChrisLPenner | 📝 chrispenner.ca`
 
 # ADTs
 
@@ -141,7 +142,7 @@ moveX n (Point x y) = Point (x + n) y
 
 ---
 
-#[fit] `data Bool = True | False`
+#[fit] `data Bool = False | True`
 
 ---
 
@@ -610,3 +611,9 @@ bind    :: Socket Unbound -> IO (Socket Bound)
 connect :: Socket Bound   -> IO ()
 unbind  :: Socket Bound   -> IO ()
 ```
+
+---
+
+#[fit] Questions?
+
+#[fit] `bit.ly/yxedevs`
